@@ -1,24 +1,48 @@
 # QCCAS
 QCCAS (Quantum computing computer algebra system) is a gate based quantum circuit simulator written in python that uses density matrices, and can give outputs in exact form rather than just approximations. The simulator is inherently deterministic and simulates every possibility unless otherwise instructed.
 
-The goal of this project is to create a simulator that can give a complete description of a quantum circuit, and to do so as efficiently as possible while being as easy to use as possible.
+The goal of this project is to create a simulator that can give a complete description of a quantum circuit, and to do so as efficiently as possible while being as easy to understand as possible. Eventually this project will become the backend for a website where you could have a visual representation of a quantum circuit.
 
+
+This readme has 2 sections. If you need to know some information about how to interact with the program, or how to get started using the program, then you should take a look at the code/implementation section. If you want to understand how this simulator is different from others, or if you want a high level overview of how the simulator works, you should take a look at the basic concepts section. 
+
+Please note some more advanced features (such as measurement splits) require an understanding of how the program functions, so any information realting to these is most likely in the basic concepts section.
+
+Please take a look at QCCAS/analysis/ for additional information not covered in the basic concepts section.
 
 # Table of Contents
-**Basic concepts:** (Theory side)
-1. [State](#state-loc)
-2. [Measurement](#measurement-loc)
-3. [Quantum evolution](#evolution-loc)
 
 **Code/implementation:** (Programming side)
 1. [Installation](#installation-loc)
 2. [Basic syntax](#basic-syntax-loc)
 
+**Basic concepts:** (Theory side)
+1. [State](#state-loc)
+2. [Measurement](#measurement-loc)
+3. [Quantum evolution](#evolution-loc)
 
-<a name="state-loc"/>
+
+
+
+
+# Code/implementation
+
+<a name="installation-loc"/>
+
+## Installation
+
+
+<a name="basic-syntax-loc"/>
+
+## Basic syntax
+
+
 
 
 # Basic concepts
+
+<a name="state-loc"/>
+
 ## State
 The state of the system at a given time is represented by a random variable, **Q**. The random variable **Q** has a pmf, and **Q** takes values in the set of possible system states. 
 
@@ -63,25 +87,15 @@ This case occurs when you have a unitary operator that depends on a measurement 
 In this case, we claim the solution of collapsing to the average quantum state would not work, and simulating the rest of the algorithm after the measurement for each outcome is necissary, and so this is what QCCAS does.
 If you have multiple of these measurements, then each branch is then split again for each measurement.
 
-Each sequence of measurement outcomes is exactly what Q represents. At the end of the algorithm, Q then yields a complete description of the output of a quantum algorithm.
+Each sequence of measurement outcomes is exactly what Q represents. At the end of the algorithm, Q then yields a complete description of the output of a quantum algorithm. 
+
+The solution for case 2 is clearly more general, but has exponential time and space complexity in the number of affected measurements, so with even moderate amounts of these, the simulator can get quite slow.
 
 See QCCAS/analysis/measure_split.ipynb for more information and proofs of stated claims.
 
 <a name="evolution-loc"/>
 
 ## Quantum evolution
-
-
-# Code/implementation
-
-<a name="installation-loc"/>
-
-## Installation
-
-
-<a name="basic-syntax-loc"/>
-
-## Basic syntax
 
 
 
