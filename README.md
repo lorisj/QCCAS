@@ -10,10 +10,9 @@ The goal of this project is to create a simulator that can give a complete descr
 2. [Measurement](#measurement-loc)
 3. [Quantum evolution](#evolution-loc)
 
-
 **Code/implementation:** (Programming side)
-1. [Third Example](#third-example-loc)
-2. [Fourth Example](#fourth-examplehttpwwwfourthexamplecom)
+1. [Installation](#installation-loc)
+2. [Basic syntax](#basic-syntax-loc)
 
 
 <a name="state-loc"/>
@@ -25,7 +24,7 @@ The state of the system at a given time is represented by a random variable, **Q
 
 Here, a system state is defined as the state of the given quantum and classical registers, where each quantum register is represented by a density matrix, and each classical register is represented by its own random variable taking values in the complex numbers. 
 
-Each quantum register represents a qbit, while each classical register represents a classical bit. In reality, the system will be in only one of these system states, but after a measurement result, it sometimes (see measurement section) makes sense to split up the simulation into mulitple branches, one for each measurement result, so that you can view what the algorithm does in every possible case. These multiple branches that arise from measurement results are what **Q** represents.
+Each quantum register represents a qubit, while each classical register represents a classical bit. In reality, the system will be in only one of these system states, but after a measurement result, it sometimes (see measurement section) makes sense to split up the simulation into multiple branches, one for each measurement result, so that you can view what the algorithm does in every possible case. These multiple branches that arise from measurement results are what **Q** represents.
 
 <a name="measurement-loc"/>
 
@@ -55,7 +54,7 @@ Instead of picking one possible measurement outcome, QCCAS instead collapses the
 
 So in case 1, **Q** will have only one entry with probability = 1, and the system state is simply the density operator of the system (for the quantum registers), combined with pmfs of its measurement results (for the classical registers). 
 
-We claim that if there are no unitary operations that depend on a specific measurement result, averaging out the measurement will yield the same density operator as branching off into seperate cases for each measurement result and then combining them at the end.
+We claim that if there are no unitary operations that depend on a specific measurement result, averaging out the measurement will yield the same density operator as branching off into separate cases for each measurement result and then combining them at the end.
 
 See QCCAS/analysis/measure_no_split.ipynb for more information and proofs of stated claims.
 ### Case 2: Split on measurement
@@ -75,6 +74,15 @@ See QCCAS/analysis/measure_split.ipynb for more information and proofs of stated
 
 # Code/implementation
 
-<a name="third-example-loc"/>
+<a name="installation-loc"/>
 
-## Third-example
+## Installation
+
+
+<a name="basic-syntax-loc"/>
+
+## Basic syntax
+
+
+
+
