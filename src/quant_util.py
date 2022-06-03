@@ -1,7 +1,7 @@
 # BY CONVENTION:
 # Random var = [ [value1, p1], [value2, p2], ...  ] (Value first, then probability)
 # 
-
+A
 
 import sympy as sp
 import linalg_util as linalg
