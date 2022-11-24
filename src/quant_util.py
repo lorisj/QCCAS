@@ -1,17 +1,11 @@
-# BY CONVENTION:
-# Random var = [ [value1, p1], [value2, p2], ...  ] (Value first, then probability)
-# 
-A
-
 import sympy as sp
 import linalg_util as linalg
 #from sympy import Matrix
 #from sympy.physics.quantum import TensorProduct
-init_rand_vec = (0,1)
+init_rand_vec = [0,1]
 
 def unitary_evolution(density_operator, unitary_operator):
     return unitary_operator * density_operator * unitary_operator.H
-
 
     
 
@@ -32,7 +26,7 @@ def unitary_evolution(density_operator, unitary_operator):
 #           probability: probability of getting this measurement result. If no observed_value is given then this is just 1.
 #  
 
-def measurement(quantum_input_rv, observable, observed_value = "not"):
+def measurement_given_outcome(quantum_input, observable, observed_value = "not"):
     
     #Observable processing:------------------------------------------------------------------------
     
@@ -50,39 +44,64 @@ def measurement(quantum_input_rv, observable, observed_value = "not"):
 
     # End observable processing -------------------------------------------------------------------
 
+    classical_output = []
+    quantum_output = 0 * quantum_input 
 
-    for rand_var_iterator in quantum_input_rv:
-        #value first, prob second by convention
-        current_density_operator = rand_var_iterator[0] 
-        current_probability = rand_var_iterator[1] 
-        
-        
-        classical_output = []
-        #if measurement value is observed, density operator collapses to one option
-        if(observed_value != "not"):
-            cur_projector = projector_dict[observed_value]
-            probability = sp.trace(cur_projector*current_density_operator)
-            quantum_output = sp.Rational(1,probability) * (cur_projector * current_density_operator * cur_projector.H)
-            classical_output.append([[observed_value, 1]])
+    #if measurement value is observed, density operator collapses to one option
+    if(observed_value != "not"):
+        cur_projector = projector_dict[observed_value]
+        probability = sp.trace(cur_projector*quantum_input)
+        quantum_output = sp.Rational(1,probability) * (cur_projector * quantum_input * cur_projector.H)
+        classical_output = FiniteRV({observed_value: 1 })
 
-        #if measurement value is not observed, density operator collapsed to average of measurement result
-        else:
-            probability = 1
-            for eigenvalue in projector_dict:
-                cur_projector = projector_dict[eigenvalue]
-                quantum_output = quantum_output + (projector_dict * current_density_operator * projector_dict.H)
-                classical_output.append([eigenvalue, sp.trace(cur_projector * current_density_operator)]) 
+    #if measurement value is not observed, density operator collapsed to average of measurement result
+    else:
+        probability = 1
+        pmf = {}
+        for eigenvalue in projector_dict:
+            cur_projector = projector_dict[eigenvalue]
+            quantum_output = quantum_output + (projector_dict * quantum_input * projector_dict.H)
+            pmf[eigenvalue] = sp.trace(cur_projector * quantum_input)
+        
+        classical_output = FiniteRV(pmf)
+
     return [quantum_output, classical_output, probability]
 
 
-def init_quant_reg(quant_reg, num_quant_reg):
-    #Sympy uses Matrix([row1, row2, ...]) so |0> = [[1],[0]]
-    init_qubit = sp.Matrix([[1], [0]])
 
-    # |0> \otimes |0> \otimes ... \otimes |0>
-    for i in range(num_quant_reg):
-        quant_reg[0] = sp.TensorProduct(quant_reg[0], init_qbit) 
+# initializes a quant_reg to contain |0><0| ^\otimes{num_quant_reg}
+# arguments:
+#           num_quant_reg: number of quantum registers to initilize
+# 
+# returns:
+#           quant_reg: np array containing |0><0| reg
+ 
 
+def init_quant_regs(num_quant_reg):
+    if(not num_quant_reg):
+        return []
+    
+    #Sympy uses Matrix([row1, row2, ...]) so |0> = [[1],[0]], |0><0| = [[1,0],[0,0]]
+    init_qubit = sp.Matrix([[1,0],[0,0]])
+
+    quant_reg = init_qubit
+
+    # |0><0| \otimes |0><0| \otimes ... \otimes |0><0|
+    for i in range(num_quant_reg - 1):
+        quant_reg = sp.TensorProduct(quant_reg[0], init_qubit) 
+    return quant_reg
+
+
+
+
+
+# processes a list of quantum operations
+# arguments: 
+#           op_list: list of quantum operations: measurement, unitary evolution, channel
+#
+#
+# returns: 
+#  
 def proc_op_list(op_list):
     for e in op_list:
         
@@ -90,11 +109,8 @@ def proc_op_list(op_list):
         # sample quantum operation: 
         # Unitary evolution: (Ti,a )
         cur_quantum_op = op_list[0]
-        
-
-
-
         cur_classical_op = op_list[1]
+
 
 
 
@@ -113,5 +129,3 @@ def proc_op_list(op_list):
     for e in op_list:
         
 
-
-main()

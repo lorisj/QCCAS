@@ -10,8 +10,13 @@ import sympy as sp
 
 def change_tensor_order_helper(index_in, list_in):
     out = 0
-    for a in range(len(list_in)):
-        out = out + 2**(L[a])*(2**(a) & index_in)
+    n = len(list_in)
+    for old_power in range(len(list_in)):
+        # if the ath bit of index_in is 1, i.e bool(index_in >> old_power & 1)
+        #  add 2**(new_power)
+        
+        new_power = n-list_in.index(old_power)-1
+        out = out + 2**(new_power)*(index_in >> old_power & 1)
     return out
 
 
@@ -24,7 +29,7 @@ def change_tensor_order_helper(index_in, list_in):
 #       0   0   0   1
 
 def change_tensor_order_matrix(list_in):
-    complete_permutation(list_in)
+    complete_permutation_list(list_in)
     out = []
     numStates = 2** NQ
     for i in range(numStates):
@@ -43,3 +48,17 @@ def complete_permutation_list(list_in):
         if(i not in list_in):
             list_in.append(i)
     return list_in
+
+
+
+def complete_operator(self, op_in, list_in): #done
+        # 1) U = U\otimes I^{\otimes |list^C|}
+        size_of_list_comp = self.num_qubits - len(list_in)
+        op_in = sp.TensorProduct(op_in, sp.eye(2**size_of_list_comp))
+        #print(op_in)
+        # 2) Calculate cob matrix M = cob(list)
+        m = self.change_tensor_order_matrix(list_in)
+        #print(m)
+        # 3) output = MUM^\dagger
+        return (m * op_in * sp.Dagger(m))
+        
