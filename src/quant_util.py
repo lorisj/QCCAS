@@ -43,7 +43,8 @@ def purify_density_operator(rho_in):
 
 
 def swap(rho_in, list_in, system_digits):
-    M = change_tensor_order_matrix(list_in, system_digits)
+    
+    M = change_tensor_order_matrix(list_in)
     return M * rho_in * M.T
 
 
