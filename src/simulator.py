@@ -33,7 +33,7 @@ class State: # State, i.e a set of quantum systems
     
 
 class Operation: # Quantum operation
-    type_list = ["unitary", "measurement", "discard"]   
+    type_list = ["unitary", "measurement", "discard", "purify"]   
     def __init__(self, type, system_index_list, parameter= [], label=""):
         assert type in Operation.type_list, "Invalid operation type"
         self.type = type
