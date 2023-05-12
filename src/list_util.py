@@ -95,31 +95,26 @@ def permutation_digit_swap_helper(block_permutation, block_digits, x):
     """
     x = int_to_binary_list(x)
     total_digits = sum(block_digits)
-    permuted_x = [0] * total_digits
     assert not(len(x) > total_digits), "input to permutation_digit_swap_helper is larger than block_digits allows"
     while len(x) < total_digits: # Fills in 0s in the front to get to total_digits number of bits 
         x.insert(0,0)
 
 
-    old_block_index = 0
-    for new_block_index in block_permutation:
-        
-        # Calculate new start position
-        new_start_pos = 0
-        for i in range(block_digits[block_permutation]):
-            new_start_pos += block_digits[i]
-        
-        
-        #
-        for digit_offset in range(block_digits[old_block_index]):
-            # TODO: See if there is an easier way to do this
-        
+    # Generate blocks (ex. [010 10 10])
+    blocks = []
+    block_offset = 0
+    for digits_to_append in block_digits:
+        block_start = block_offset
+        block_end = block_offset + digits_to_append
+        blocks.append(x[block_offset:block_end])
+        block_offset += digits_to_append
 
+    # Rearrange result by permutation
+    permuted_x = []
+    for block_index in block_permutation:
+        permuted_x.extend(blocks[block_index])
 
-        old_block_index += 1
-
-
-    return permuted_x
+    return binary_list_to_int(permuted_x)
 
 
 

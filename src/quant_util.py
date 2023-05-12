@@ -3,18 +3,17 @@ from sympy.physics.quantum.matrixutils import matrix_tensor_product
 from list_util import bring_to_front
 from linalg_util import *
 
-
+# Quantutil should only work on single digits!!!! Leave multiple systems to the simulator.
 
 
 """
-    Purify a density operator given its eigenvalues and eigenvectors.
+    Purify a density matrix.
 
     Args:
-        eigenvalues (list or tuple): List or tuple of eigenvalues of the density operator.
-        eigenvectors (list or tuple): List or tuple of eigenvectors of the density operator.
+        rho_in (sympy.Matrix): Density matrix to be purified.
 
     Returns:
-        sympy.Matrix: Purified state as a matrix object.
+        sympy.Matrix: Purified state (vector) as a matrix object.
 """
 def purify_density_operator(rho_in):
     eigenvalues = []
@@ -38,12 +37,11 @@ def purify_density_operator(rho_in):
         
         psi_i = sp.sqrt(eigenvalue) * sp.Matrix(matrix_tensor_product(eigenvector, eigenvector)) # Tensor product of eigenvector with itself
         psi = psi + psi_i # Add to the purified state
-    return psi
+    return psi * psi.H # Return |\psi><\psi|, the pure state density matrix.
 
 
 
-def swap(rho_in, list_in, system_digits):
-    
+def swap_digits(rho_in, list_in):
     M = change_tensor_order_matrix(list_in)
     return M * rho_in * M.T
 
@@ -51,9 +49,9 @@ def swap(rho_in, list_in, system_digits):
 
 
 def partial_trace(rho_in, system_digits, traced_system_index, base=2):
-    # TODO: Figure out how to transfer base
+    # TODO: Figure out how to transfer base, also move system_digits to the simulator. Quantutil should only work on single digits.
     num_systems = len(system_digits)
-    rho_in = swap(rho_in, bring_to_front(list(range(num_systems)), traced_system_index), system_digits)
+    rho_in = swap_digits(rho_in, bring_to_front(list(range(num_systems)), traced_system_index), system_digits)
     
    
     n = sum(system_digits) # Current total number of digits

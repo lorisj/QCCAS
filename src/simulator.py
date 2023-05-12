@@ -5,77 +5,133 @@ from quant_util import *
 from list_util import swap_list_positions
 
 
+
+
+
 class State: # State, i.e a set of quantum systems 
 
-    def __init__(self, matrix, system_digits, base):
+    def __init__(self, matrix, system_digits, base_list = []):
         self.matrix = matrix # Total matrix representing current state.
         self.system_digits = system_digits # array that at index i says how many qudits are in system i
-        self.base = base # What base (2 -> qubit, 3 -> qutrit, etc.)
-
-    def process(self, operation):
-        match operation.type:
-            
-            case "unitary": # self.parameter has type Matrix (unitary matrix used for evolution)
-                self.matrix = operation.parameter * self.state * operation.parameter.H
+        self.base_list = [2] * len(system_digits) # By default, base is 2.
+        if(base_list): # if there is a base
+            self.base_list = base_list # What base (2 -> qubit, 3 -> qutrit, etc.)
 
 
-            case "measurement": 
-                # If target is given then output it otherwise do a measure channel
-                pass
-            
-            case "discard":
-                for index, traced_system_index in enumerate(operation.system_index_list):
-                    self.matrix = partial_trace(self.matrix, self.system_digits, traced_system_index,self.base) 
-                    self.system_digits[index] = 0
-                
+    def is_pure(self):
+        return self.matrix == self.matrix * self.matrix
 
-        return self
+    def is_separable(self, digit_list =[]):
+        # digit_list: if the given digits together are seprable
+        if not digit_list:
+            digit_list = self.system_digits 
+        
+        # check_matrix = partial_trace(self.matrix, some_function_that_subtracts(list(range(len(system_digits))), digit_list)) # partial trace out everything but digit_list
+
+        pass # maybe partial trace out every qubit, then see if it is the product? 
     
 
 class Operation: # Quantum operation
-    type_list = ["unitary", "measurement", "discard", "purify"]   
-    def __init__(self, type, system_index_list, parameter= [], label=""):
-        assert type in Operation.type_list, "Invalid operation type"
+    type_list = ["unitary", "measurement", "discard", "purify", "initialize", "split"]   
+
+    # self.input_digit_list
+    # self.output_digit_list
+    # self.input_base_list: Base for input_digit_list
+    # self.parameter: 
+    #   Unitary matrix for unitary evolution, 
+    #   Observable for measurement, 
+    #   Not used (i.e. empty) for discard, purify, split
+    #   State for 
+    # self.label: for name of operation
+    # self.type: type of operation, i.e. something in type_list
+
+
+    def __init__(self, type, parameter= [], label=""):
+        
         self.type = type
-        # parameter: Unitary matrix for unitary evolution, observable for measurement, not used (can be empty) for discard
         self.parameter = parameter 
-        self.system_index_list = system_index_list # List that says which systems the operation will work on.  
-        self.label = "" # Label for name of operation
+        self.label = label 
 
+        self.assert_valid_operation() # Make sure the parameter and type are valid.
 
-    
+        match type:
+            case "unitary": # self.parameter has type Matrix (unitary matrix used for evolution)
+                pass
+
+            case "measurement": 
+                pass
+
+            case "discard":
+                pass
+
+            case "purify":
+                pass
+
+            case "initialize":
+                pass 
+            case "split":
+                pass
+
+        
+
+    def assert_valid_operation(self):
+        assert type in Operation.type_list, "Invalid operation type"
+        match type:     
+            case "unitary":
+                assert self.parameter * self.parameter.H ==  self.parameter.H * self.parameter  == sp.eye(self.parameter.shape()[0]), "Input matrix not unitary" # Checks input matrix is really unitary 
+            
+            case "measurement":
+                assert self.parameter == self.parameter.H, "observable not hermitian"
+
+            case "initialize":
+                assert self.parameter.H == self.parameter ,"initial state not hermitian"
+                assert sp.Trace(self.parameter) == 1, "initial state not trace 1"
+                assert self.parameter.is_positive_semidefinite(), "initial state not PSD"
 
 
 class Circuit: # Chain of Operations, can change size, but has to be linked together somehow
     
        
-    def __init__(self, dimension_list, base_list=[]):
-        self.system_list = dimension_list
+    def __init__(self, input_digit_list, input_base_list=[]):
+        self.input_system_list = input_digit_list # Input to circuit
         self.operation_list = []
         if base_list:
-            self.base_list = base_list
+            self.input_base_list = input_base_list
         else:
-            base_list = [2] * len(dimension_list) # By default we are dealing with qubits
+            base_list = [2] * len(input_digit_list) # By default we are dealing with qubits
+        
+        self.current_digit_list = input_digit_list
+        self.current_base_list = input_base_list
+
+
         
 
 
-        
+    def operation(self, operation_in, input_system_list):
+        match operation_in.type:
+            case "unitary": # self.parameter has type Matrix (unitary matrix used for evolution)
+                pass
+
+            case "measurement": 
+                # Add classical output system
+                base = 2
+                num_eigenvalues = len(operation_in.parameter.eigenvals()) # Calculate classical digits needed, = ceil(log_2(#eigenvalues))
+                num_out_digits = math.ceil(math.log(num_eigenvalues,base))
+                classical_digit_index = input_system_list[len(input_system_list ) - 1] 
+                self.current_digit_list.insert(classical_digit_index, 1)
+                self.current_base_list.insert(classical_digit_index, num_out_digits)
+
+            case "discard":
+                pass
+
+            case "purify":
+                pass
+
+            case "initialize":
+                pass 
 
 
-    def discard(self, system_index):
-        pass
 
-    
-
-    def unitary(self, unitary_matrix, system_index_list, label=""):
-        
-        # Assert checks:
-        systems_dim = 1
-        for s in system_index_list:
-            systems_dim *= self.base_list[s] ** self.dimension_list[s] # TODO: Check this
-        assert unitary_matrix.shape()[0] == unitary_matrix.shape()[1] == systems_dim  , 0 # Checks that the dimension of the target system(s) is the same as the unitary
-        assert unitary_matrix * unitary_matrix.H ==  unitary_matrix.H * unitary_matrix  == sp.eye(systems_dim) # Checks input matrix is really unitary 
-    
 
 
     def process(self, state_in):
@@ -86,6 +142,11 @@ class Circuit: # Chain of Operations, can change size, but has to be linked toge
         return state_out
 
 
+    def swap_systems(self, swap_list):
+        pass
+
+    def get_current_system_list(self):
+        return self.current_system_list
 
 
 
