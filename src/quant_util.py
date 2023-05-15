@@ -1,4 +1,5 @@
 import sympy as sp
+import math
 from sympy.physics.quantum.matrixutils import matrix_tensor_product
 from list_util import bring_to_front
 from linalg_util import *
@@ -15,7 +16,7 @@ from linalg_util import *
     Returns:
         sympy.Matrix: Purified state (vector) as a matrix object.
 """
-def purify_density_operator(rho_in):
+def purify_density_operator(rho_in : sp.Matrix)-> sp.Matrix:
     eigenvalues = []
     eigenvectors = []
     eigentuples = rho_in.eigenvects()
@@ -41,43 +42,49 @@ def purify_density_operator(rho_in):
 
 
 
-def swap_digits(rho_in, list_in):
+def swap_digits(rho_in : sp.Matrix, list_in : list[int]) -> sp.Matrix:
     M = change_tensor_order_matrix(list_in)
     return M * rho_in * M.T
 
 
 
 
-def partial_trace(rho_in, system_digits, traced_system_index, base=2):
-    # TODO: Figure out how to transfer base, also move system_digits to the simulator. Quantutil should only work on single digits.
-    num_systems = len(system_digits)
-    rho_in = swap_digits(rho_in, bring_to_front(list(range(num_systems)), traced_system_index), system_digits)
+def partial_trace_front(rho_in : sp.Matrix, new_size : int) -> sp.Matrix:
+    digits_traced = rho_in.shape[0]/new_size
+    assert digits_traced.is_integer() , "new_size is inconsistent (i.e. not a divisor of size) with rho_in"
+    digits_traced = int(digits_traced)
+
+    rho_out = sp.Matrix([([0] * new_size)]*new_size)
+    for row in range(new_size):
+        for col in range(new_size):
+            for i in range(digits_traced):
+                rho_out[row, col] += rho_in[row + new_size * i, col + new_size * i]
     
-   
-    n = sum(system_digits) # Current total number of digits
-    while(system_digits[0] != 0): # While there is something to trace out
-        new_size = base ** (n-1) # Size of the new matrix after the partial trace
-        rho_out = sp.Matrix([([0] * new_size)]*new_size)
-        for row in range(new_size):
-            for col in range(new_size):
-                rho_out[row, col] = rho_in[row, col] + rho_in[row + new_size, col + new_size]
-        
-
-        system_digits[0] = system_digits[0] - 1 # Take one less digit
-        n = n-1 # One less digit
-        rho_in = rho_out # If loop happens we want the new rho_in to be 
-
     return sp.Matrix(rho_out)
 
 
 
 
 
+def assert_unitary(matrix_in : sp.Matrix):
+    assert matrix_in * matrix_in.H ==  matrix_in.H * matrix_in  == sp.eye(matrix_in.shape()[0]), "Input matrix not unitary" # Checks input matrix is really unitary
+
+
+def assert_density_matrix(matrix_in : sp.Matrix):
+    assert matrix_in.shape[0] == matrix_in.shape[1], "initial state not a matrix (must be a density matrix, do outer product for pure state)"
+    assert matrix_in.H == matrix_in ,"initial state matrix not hermitian"
+    assert sp.Trace(matrix_in) == 1, "initial state matrix not trace 1"
+    assert matrix_in.is_positive_semidefinite(), "initial state matrix not PSD"
+
+def assert_hermitian(matrix_in : sp.Matrix):
+    assert matrix_in == matrix_in.H, "observable not hermitian"
+
+
 def tests():
     #rho_in = sp.eye(4)/4
     rho_in = sp.Matrix([[1,2,3,4],[5,6,7,8],[9,10,11,12],[13,14,15,16]])
     sp.pprint(rho_in)
-    sp.pprint(partial_trace(rho_in, [1,1],0))
+    sp.pprint(partial_trace_front(rho_in, 2))
 
 
 

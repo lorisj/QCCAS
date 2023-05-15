@@ -1,0 +1,15 @@
+[project]
+name = "qccas"
+version = "0.0.1"
+authors = [
+  { name="Loris Jautakas", email="lorisj@umich.edu" },
+  { name="Adris Jautakas", email="adrisj7@gmail.com " },
+]
+description = "QCCAS"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]

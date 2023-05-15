@@ -9,7 +9,7 @@ from sympy.physics.quantum.matrixutils import matrix_tensor_product
 # 1 = 01 -> 2 = 10,
 # 2 = 10 -> 1 = 01,
 # 3 = 11 -> 3 = 11
-def change_tensor_order_helper(index_in, list_in):
+def change_tensor_order_helper(index_in : int, list_in : list[int]) -> list[int]:
     out = 0
     power_so_far = 0 # for every input power
     for system_index in range(len(list_in)):
@@ -35,7 +35,7 @@ def change_tensor_order_helper(index_in, list_in):
     #       0   0   1   0
     #       0   1   0   0
     #       0   0   0   1
-def change_tensor_order_matrix(list_in): #done
+def change_tensor_order_matrix(list_in : list[int]) -> sp.Matrix: #done
     out = []    
     num_states = 2** len(list_in)
     for i in range(num_states):
@@ -48,7 +48,7 @@ def change_tensor_order_matrix(list_in): #done
 
 
 # returns the ith std unit column vector in R**dim_in
-def std_unit_vector(dim_in, i):
+def std_unit_vector(dim_in : int, i : int) -> sp.Matrix():
     list = [0]*dim_in
     list[i] = 1
     return sp.Matrix(list).T

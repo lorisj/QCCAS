@@ -1,12 +1,12 @@
 
 
-def swap_list_positions(list, pos1, pos2):
+def swap_list_positions(list : list, pos1 : int, pos2 : int)-> list:
     list[pos1], list[pos2] = list[pos2], list[pos1]
     return list
 
 
 
-def dict_to_vector(dictionary):
+def dict_to_vector(dictionary : dict) -> list:
     """
     Converts a dictionary of the form {key: value} into a vector.
 
@@ -23,13 +23,12 @@ def dict_to_vector(dictionary):
 
 
 # Brings the value at index_in to the front, does not change anything else
-def bring_to_front(list, index_in):
+def bring_to_front(list : list, index_in : int) -> list:
     list.insert(0, list.pop(index_in))
     return list
 
 
-
-def int_to_binary_list(n):
+def int_to_binary_list(n : int) -> list[int]:
     """
         Converts a binary number into a list of 0s and 1s representing it.
 
@@ -50,7 +49,7 @@ def int_to_binary_list(n):
     
     return binary_list
 
-def binary_list_to_int(binary_list):
+def binary_list_to_int(binary_list : list[int]) -> int:
         """
         Converts a list of 0s and 1s representing a binary number to an integer.
 
@@ -70,7 +69,7 @@ def binary_list_to_int(binary_list):
         int_value = int(binary_string, 2)
         return int_value
 
-def permutation_digit_swap_helper(block_permutation, block_digits, x):
+def permutation_digit_swap_helper(block_permutation : list[int], block_digits : list[int], x : int) -> int:
     """
     Permutes the binary digits of an input integer x according to a specified
     permutation of the blocks of digits.
@@ -120,7 +119,7 @@ def permutation_digit_swap_helper(block_permutation, block_digits, x):
 
 
  
-def permutation_digit_swap(block_permutation, block_digits):
+def permutation_digit_swap(block_permutation : list[int], block_digits : list[int])-> list:
     """
     Permutes the binary digits of an input integer x according to a specified
     permutation of the blocks of digits.
@@ -141,5 +140,7 @@ def permutation_digit_swap(block_permutation, block_digits):
     total_digits = sum(block_digits)
     for x in range(2**total_digits):
         permutation_out.append(permutation_digit_swap_helper(block_permutation, block_digits, x))
+    
+
     return permutation_out
 
