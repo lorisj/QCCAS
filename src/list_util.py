@@ -144,3 +144,5 @@ def permutation_digit_swap(block_permutation : list[int], block_digits : list[in
 
     return permutation_out
 
+
+

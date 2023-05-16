@@ -67,7 +67,7 @@ def partial_trace_front(rho_in : sp.Matrix, new_size : int) -> sp.Matrix:
 
 
 def assert_unitary(matrix_in : sp.Matrix):
-    assert matrix_in * matrix_in.H ==  matrix_in.H * matrix_in  == sp.eye(matrix_in.shape()[0]), "Input matrix not unitary" # Checks input matrix is really unitary
+    assert matrix_in * matrix_in.H ==  matrix_in.H * matrix_in  == sp.eye(matrix_in.shape [0]), f"Input matrix {matrix_in} not unitary" # Checks input matrix is really unitary
 
 
 def assert_density_matrix(matrix_in : sp.Matrix):
